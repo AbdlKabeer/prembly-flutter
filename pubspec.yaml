@@ -1,0 +1,33 @@
+name: prembly
+description: >-
+  Prembly SDK for Flutter: hosted workflows and Transaction Monitoring device sessions behind one
+  Prembly.init, Prembly.workflow and Prembly.tm API. The Flutter counterpart of @olakay/prembly.
+version: 0.1.0
+publish_to: none # private until it is ready to publish
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.22.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.0
+  permission_handler: ">=11.3.1 <13.0.0"
+  webview_flutter: ^4.10.0
+  webview_flutter_android: ^4.0.0
+  webview_flutter_wkwebview: ^3.16.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.prembly.prembly
+        pluginClass: PremblyPlugin
+      ios:
+        pluginClass: PremblyPlugin

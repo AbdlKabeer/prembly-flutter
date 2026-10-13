@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - prembly (0.1.0):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - prembly (from `.symlinks/plugins/prembly/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  prembly:
+    :path: ".symlinks/plugins/prembly/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 71a624a5bc0c04062bf19101d501e466baf2fb47
+  prembly: 97378473c387ce021551066927e963259a1aaa1e
+
+PODFILE CHECKSUM: 3ba3a73b1b12adcf321a227a745625fe0888cc82
+
+COCOAPODS: 1.17.0
