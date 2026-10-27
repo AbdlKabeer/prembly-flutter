@@ -65,6 +65,18 @@ void main() {
     expect(flow.isClosed, isTrue);
   });
 
+  test('the widget\'s own Cancel is reported once as cancelled, with the last event', () {
+    flow.handleBridgeMessage(message('processing'));
+    flow.handleBridgeMessage(message('cancelled'));
+    flow.handleBridgeMessage(message('cancelled')); // nothing after the close
+    expect(results.single.status, 'cancelled');
+    expect(results.single.sessionId, 'wf_session_1');
+    expect(results.single.lastEvent, 'processing');
+    expect(events.where((e) => e.type == 'cancelled'), hasLength(1));
+    expect(closes, 1);
+    expect(flow.isClosed, isTrue);
+  });
+
   for (final end in ['completed', 'failed', 'manual_review', 'expired']) {
     test('$end is reported as the callback status', () {
       flow.handleBridgeMessage(message(end));
