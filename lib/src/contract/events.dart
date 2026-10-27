@@ -9,6 +9,9 @@ const List<String> workflowEventTypes = [
   'failed',
   'manual_review',
   'expired',
+  // The person used the widget's own Cancel button. It is not an end state: the flow handles it
+  // like the app's close button, so it is reported as `cancelled` with the last event seen.
+  'cancelled',
 ];
 
 const List<String> terminalEventTypes = [

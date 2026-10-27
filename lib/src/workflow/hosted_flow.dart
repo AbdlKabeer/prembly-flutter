@@ -58,6 +58,13 @@ class HostedFlow implements WorkflowHandle {
     final envelope = normaliseEnvelope(decoded['d']);
     if (envelope == null || envelope.product != product) return;
 
+    // The person cancelled from the hosted widget's own Cancel button: close the flow the way the
+    // app's close button does. This comes first so `lastEvent` is still what came before it.
+    if (envelope.type == 'cancelled') {
+      close();
+      return;
+    }
+
     final terminal = isTerminalType(envelope.type);
     if (terminal) _finished = true;
     _lastEvent = envelope.type;
