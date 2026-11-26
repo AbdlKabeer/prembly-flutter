@@ -114,6 +114,7 @@ origin, and carries a per-flow random nonce.
   folder name, which must match the package name.
 * **Web, macOS, Windows, Linux:** Android and iOS only.
 * The signals a platform cannot provide are omitted, never guessed (see the contract).
+* Root, jailbreak and hooking detection (`hooking_framework_detected`) is best effort: `true` is strong evidence, `false` is not proof.
 * Other products (`Prembly.kyc` and so on) and `Prembly.register`: not available.
 
 ## Develop

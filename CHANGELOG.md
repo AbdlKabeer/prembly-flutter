@@ -1,3 +1,9 @@
+## Unreleased
+
+* `integrity.hooking_framework_detected` on Android and iOS: Frida, Xposed, LSPosed and Substrate
+  detection. iOS reports it apart from `is_rooted`, so a hooked device is no longer folded into the
+  jailbreak flag. Best effort: `true` is strong evidence, `false` is not proof.
+
 ## 0.1.0
 
 First release: the Flutter counterpart of `@olakay/prembly` (contract v4).
