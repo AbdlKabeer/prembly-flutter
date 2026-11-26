@@ -120,14 +120,56 @@ enum SignalCollector {
       return true
     }
 
-    // Hooking and injection libraries loaded into this process.
-    let markers = ["mobilesubstrate", "substrate", "fridagadget", "cynject", "libcycript", "sslkillswitch"]
+    return false
+  }
+
+  /// Hooking and injection libraries loaded into this process (Frida, Substrate, Cycript...).
+  /// Reported separately from jailbreak: an injected library is strong evidence on its own, and it
+  /// can be present on a device that passes every jailbreak file check. Best effort.
+  private static func isHookingFrameworkDetected() -> Bool {
+    let markers = [
+      "mobilesubstrate", "substrate", "fridagadget", "frida", "cynject", "libcycript",
+      "sslkillswitch", "libhooker",
+    ]
     for index in 0..<_dyld_image_count() {
       guard let name = _dyld_get_image_name(index) else { continue }
       let image = String(cString: name).lowercased()
       if markers.contains(where: { image.contains($0) }) { return true }
     }
-    return false
+
+    // The default frida-server port, open on localhost.
+    return isLocalPortOpen(27042)
+  }
+
+  /// A non-blocking connect to 127.0.0.1 with a 100 ms wait, so it never stalls signal collection.
+  /// Nothing is sent; the connection is closed straight away.
+  private static func isLocalPortOpen(_ port: UInt16) -> Bool {
+    let sock = socket(AF_INET, SOCK_STREAM, 0)
+    if sock < 0 { return false }
+    defer { close(sock) }
+
+    var addr = sockaddr_in()
+    addr.sin_family = sa_family_t(AF_INET)
+    addr.sin_port = port.bigEndian
+    addr.sin_addr.s_addr = UInt32(INADDR_LOOPBACK).bigEndian
+
+    let flags = fcntl(sock, F_GETFL, 0)
+    _ = fcntl(sock, F_SETFL, flags | O_NONBLOCK)
+
+    let result = withUnsafePointer(to: &addr) {
+      $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+        connect(sock, $0, socklen_t(MemoryLayout<sockaddr_in>.size))
+      }
+    }
+    if result == 0 { return true }
+    guard errno == EINPROGRESS else { return false }
+
+    var pollFd = pollfd(fd: sock, events: Int16(POLLOUT), revents: 0)
+    guard poll(&pollFd, 1, 100) > 0 else { return false }
+    var error: Int32 = 0
+    var length = socklen_t(MemoryLayout<Int32>.size)
+    getsockopt(sock, SOL_SOCKET, SO_ERROR, &error, &length)
+    return error == 0
   }
 
   private static func hasDeviceLock() -> Bool {
@@ -140,6 +182,7 @@ enum SignalCollector {
       "is_rooted": isJailbroken(),
       "is_emulator": isSimulator,
       "is_debugger_attached": isDebuggerAttached(),
+      "hooking_framework_detected": isHookingFrameworkDetected(),
       "is_device_secure": hasDeviceLock(),
     ]
   }
